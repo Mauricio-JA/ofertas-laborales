@@ -14,18 +14,6 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    createdBy   User   @relation(fields: [createdById], references: [id])
-    createdById String
-
-    @@index([name])
-}
-
 // Necessary for Next auth
 model Account {
     id                       String  @id @default(cuid())
@@ -40,29 +28,10 @@ model Account {
     scope                    String?
     id_token                 String? // @db.Text
     session_state            String?
-    user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    user                     Usuario    @relation(fields: [userId], references: [id], onDelete: Cascade)
     refresh_token_expires_in Int?
 
     @@unique([provider, providerAccountId])
-}
-
-model Session {
-    id           String   @id @default(cuid())
-    sessionToken String   @unique
-    userId       String
-    expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
-    posts         Post[]
 }
 
 model VerificationToken {
@@ -71,4 +40,165 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model Session {
+    id           String   @id @default(cuid())
+    sessionToken String   @unique
+    userId       String
+    expires      DateTime
+    user         Usuario     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model TipoUsuario {
+    id          Int      @id @default(autoincrement())
+    nombre      String
+    descripcion String
+
+    usuarios    Usuario[]
+}
+
+model Usuario {
+    id            String    @id @default(cuid())
+    nombreUsuario String    @unique
+    contrasena    String
+    estado        Boolean
+    tipoUsuarioId Int
+
+    tipoUsuario   TipoUsuario @relation(fields: [tipoUsuarioId], references: [id])
+    accounts      Account[]
+    sessions      Session[]  
+
+    persona       Persona?
+    empresa       Empresa?
+}
+
+model Persona {
+    id          String    @id @default(cuid())
+    nombre      String
+    apellidoPaterno    String
+    apellidoMaterno    String
+    ci          String
+    correo      String
+    telefono    String
+    direccion   String
+    fechaNacimiento DateTime
+    nacionalidad String
+    estadoCivil  String
+    sexo         String
+    usuarioId    String  @unique
+
+    usuario      Usuario @relation(fields: [usuarioId], references: [id])
+    estudiante   Estudiante?
+    administrador Administrador?
+}
+
+model Estudiante {
+    id          String    @id @default(cuid())
+    urlFotoPerfil String
+    profesionId  Int
+    personaId   String    @unique
+
+    profesion    Profesion @relation(fields: [profesionId], references: [id])
+    persona     Persona @relation(fields: [personaId], references: [id])
+    estudios    Estudio[]
+    experiencias Experiencia[]
+    postulaciones Postulacion[]
+}
+
+model Administrador {
+    id          String    @id @default(cuid())
+    personaId   String    @unique
+
+    persona     Persona @relation(fields: [personaId], references: [id])
+    ofertasLaboralesRevisadas OfertaLaboral[]
+}
+
+model Empresa {
+    id          String    @id @default(cuid())
+    nombre      String
+    nit         String
+    direccion   String
+    telefono    String
+    correo      String
+    usuarioId    String  @unique
+
+    usuario      Usuario @relation(fields: [usuarioId], references: [id])
+    ofertasLaborales OfertaLaboral[]
+}
+
+model Profesion {
+    id          Int      @id @default(autoincrement())
+    nombre      String
+
+    estudiantes  Estudiante[]
+    areasInteres OfertaLaboral[]
+}
+
+model Estudio {
+    id          Int      @id @default(autoincrement())
+    nombre      String
+    lugar      String
+    fechaInicio DateTime
+    fechaFin    DateTime
+    estudianteId String
+
+    estudiante   Estudiante @relation(fields: [estudianteId], references: [id])
+}
+
+model Experiencia {
+    id          Int      @id @default(autoincrement())
+    cargo       String
+    nombreEmpresa String
+    descripcion String
+    fechaInicio DateTime
+    fechaFin    DateTime
+    estudianteId String
+
+    estudiante   Estudiante @relation(fields: [estudianteId], references: [id])
+}
+
+enum EnumTipoTrabajo {
+    TIEMPO_COMPLETO
+    TIEMPO_PARCIAL
+    TIEMPO_LIBRE
+    TEMPORAL
+    CONSULTORIA
+    PASANTIA
+}
+
+enum EstadoOfertaLaboral {
+    ACTIVA
+    REVISION
+    INACTIVA
+    ADQUIRIDA_INSTITUCION
+    ADQUIRIDA_EXTERNA
+}
+model OfertaLaboral {
+    id          String    @id @default(cuid())
+    titulo      String
+    descripcion String
+    tipoTrabajo EnumTipoTrabajo
+    ubicacion   String
+    vacantes    Int
+    fechaPublicacion DateTime
+    estado      EstadoOfertaLaboral
+    administradorId String
+    empresaId   String
+
+    empresa     Empresa @relation(fields: [empresaId], references: [id])
+    administrador Administrador @relation(fields: [administradorId], references: [id])
+    postulaciones Postulacion[]
+    areasInteres Profesion[]
+}
+
+model Postulacion {
+    id          String    @id @default(cuid())
+    fechaPostulacion DateTime
+    estado      Boolean
+    estudianteId String
+    ofertaLaboralId String
+
+    estudiante   Estudiante @relation(fields: [estudianteId], references: [id])
+    ofertaLaboral OfertaLaboral @relation(fields: [ofertaLaboralId], references: [id])
 }
