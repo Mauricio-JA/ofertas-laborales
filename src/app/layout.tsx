@@ -1,8 +1,13 @@
 import "~/styles/globals.css";
+import "primereact/resources/themes/arya-orange/theme.css";
+import "primeicons/primeicons.css";
 
 import { GeistSans } from "geist/font/sans";
 
+import { PrimeReactProvider } from "primereact/api";
+
 import { TRPCReactProvider } from "~/trpc/react";
+import Navbar from "./_layouts/Navbar";
 
 export const metadata = {
   title: "Create T3 App",
@@ -18,7 +23,14 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
       <body>
-        <TRPCReactProvider>{children}</TRPCReactProvider>
+        <TRPCReactProvider>
+          <PrimeReactProvider>
+            <Navbar />
+            <main className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+              {children}
+            </main>
+          </PrimeReactProvider>
+        </TRPCReactProvider>
       </body>
     </html>
   );
