@@ -78,14 +78,14 @@ model Persona {
     nombre      String
     apellidoPaterno    String
     apellidoMaterno    String
-    ci          String
+    ci          String?
     correo      String
-    telefono    String
-    direccion   String
-    fechaNacimiento DateTime
-    nacionalidad String
-    estadoCivil  String
-    sexo         String
+    telefono    String?
+    direccion   String?
+    fechaNacimiento DateTime?
+    nacionalidad String?
+    estadoCivil  String?
+    sexo         String?
     usuarioId    String  @unique
 
     usuario      Usuario @relation(fields: [usuarioId], references: [id])
@@ -95,7 +95,7 @@ model Persona {
 
 model Estudiante {
     id          String    @id @default(cuid())
-    urlFotoPerfil String
+    urlFotoPerfil String?
     profesionId  Int
     personaId   String    @unique
 
@@ -117,7 +117,7 @@ model Administrador {
 model Empresa {
     id          String    @id @default(cuid())
     nombre      String
-    nit         String
+    nit         String?
     direccion   String
     telefono    String
     correo      String
@@ -129,7 +129,7 @@ model Empresa {
 
 model Profesion {
     id          Int      @id @default(autoincrement())
-    nombre      String
+    nombre      String   @unique
 
     estudiantes  Estudiante[]
     areasInteres OfertaLaboral[]

@@ -1,0 +1,68 @@
+{
+  "tiposUsuario": [
+    {
+      "nombre": "Administrador",
+      "descripcion": "Usuario con permisos para administrar el sistema"
+    },
+    {
+      "nombre": "Estudiante",
+      "descripcion": "Usuario con permisos para buscar ofertas de trabajo y postularse a ellas"
+    },
+    {
+      "nombre": "Empresa",
+      "descripcion": "Usuario con permisos para publicar ofertas de trabajo"
+    }
+  ],
+  "administrador": {
+    "nombre": "Juan",
+    "apellidoPaterno": "Perez",
+    "apellidoMaterno": "Gomez",
+    "correo": "juanperez@email.com",
+    "usuario": {
+      "nombreUsuario": "juanperez",
+      "estado": true,
+      "tipoUsuario": 1
+    }
+  },
+  "empresas": [
+    {
+      "nombre": "El Deber",
+      "correo": "eldeber@email.com",
+      "telefono": "36874512",
+      "direccion": "Av. Banzer",
+      "usuario": {
+        "nombreUsuario": "eldeber",
+        "estado": true,
+        "tipoUsuario": 3
+      }
+    },
+    {
+      "nombre": "Toyota Bolivia",
+      "correo": "toyota_bo@email.com",
+      "telefono": "34587125",
+      "direccion": "Av. Beni",
+      "usuario": {
+        "nombreUsuario": "toyota",
+        "estado": true,
+        "tipoUsuario": 3
+      }
+    }
+  ],
+  "estudiantes": [
+    {
+      "nombre": "Mauricio",
+      "apellidoPaterno": "Justiniano",
+      "apellidoMaterno": "Añez",
+      "correo": "mauricioja@email.com",
+      "telefono": "74455789",
+      "estudiante": {
+        "profesion": "Ingenieria de Sistemas"
+      },
+      "usuario": {
+        "nombreUsuario": "mauricioja",
+        "estado": true,
+        "tipoUsuario": 2
+      }
+    }
+  ]
+}
