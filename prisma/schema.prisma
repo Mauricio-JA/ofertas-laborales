@@ -28,7 +28,7 @@ model Account {
     scope                    String?
     id_token                 String? // @db.Text
     session_state            String?
-    user                     Usuario    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
     refresh_token_expires_in Int?
 
     @@unique([provider, providerAccountId])
@@ -47,7 +47,7 @@ model Session {
     sessionToken String   @unique
     userId       String
     expires      DateTime
-    user         Usuario     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model TipoUsuario {
@@ -55,11 +55,18 @@ model TipoUsuario {
     nombre      String
     descripcion String
 
-    usuarios    Usuario[]
+    usuarios    User[]
 }
 
-model Usuario {
-    id            String    @id @default(cuid())
+model User {
+     id            String          @id @default(cuid())
+    name          String?
+    email         String          @unique
+    emailVerified DateTime?
+    image         String?
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
     nombreUsuario String    @unique
     contrasena    String
     estado        Boolean
@@ -71,6 +78,8 @@ model Usuario {
 
     persona       Persona?
     empresa       Empresa?
+
+    @@map("Usuario")
 }
 
 model Persona {
@@ -88,7 +97,7 @@ model Persona {
     sexo         String?
     usuarioId    String  @unique
 
-    usuario      Usuario @relation(fields: [usuarioId], references: [id])
+    usuario      User @relation(fields: [usuarioId], references: [id])
     estudiante   Estudiante?
     administrador Administrador?
 }
@@ -123,7 +132,7 @@ model Empresa {
     correo      String
     usuarioId    String  @unique
 
-    usuario      Usuario @relation(fields: [usuarioId], references: [id])
+    usuario      User @relation(fields: [usuarioId], references: [id])
     ofertasLaborales OfertaLaboral[]
 }
 

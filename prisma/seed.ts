@@ -29,6 +29,7 @@ async function main() {
       },
       usuario: {
         create: {
+          email: administrador.correo,
           nombreUsuario: administrador.usuario.nombreUsuario,
           contrasena: hashAdmin,
           estado: administrador.usuario.estado,
@@ -51,6 +52,7 @@ async function main() {
         telefono: empresa.telefono,
         usuario: {
           create: {
+            email: empresa.correo,
             nombreUsuario: empresa.usuario.nombreUsuario,
             contrasena: hashEmpresas,
             estado: empresa.usuario.estado,
@@ -88,6 +90,7 @@ async function main() {
         },
         usuario: {
           create: {
+            email: estudiante.correo,
             nombreUsuario: estudiante.usuario.nombreUsuario,
             contrasena: hashUsuarios,
             estado: estudiante.usuario.estado,

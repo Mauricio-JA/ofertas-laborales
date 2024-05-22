@@ -24,6 +24,13 @@ CREATE TABLE "Account" (
 );
 
 -- CreateTable
+CREATE TABLE "VerificationToken" (
+    "identifier" TEXT NOT NULL,
+    "token" TEXT NOT NULL,
+    "expires" TIMESTAMP(3) NOT NULL
+);
+
+-- CreateTable
 CREATE TABLE "Session" (
     "id" TEXT NOT NULL,
     "sessionToken" TEXT NOT NULL,
@@ -31,13 +38,6 @@ CREATE TABLE "Session" (
     "expires" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Session_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "VerificationToken" (
-    "identifier" TEXT NOT NULL,
-    "token" TEXT NOT NULL,
-    "expires" TIMESTAMP(3) NOT NULL
 );
 
 -- CreateTable
@@ -52,6 +52,12 @@ CREATE TABLE "TipoUsuario" (
 -- CreateTable
 CREATE TABLE "Usuario" (
     "id" TEXT NOT NULL,
+    "name" TEXT,
+    "email" TEXT NOT NULL,
+    "emailVerified" TIMESTAMP(3),
+    "image" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
     "nombreUsuario" TEXT NOT NULL,
     "contrasena" TEXT NOT NULL,
     "estado" BOOLEAN NOT NULL,
@@ -66,14 +72,14 @@ CREATE TABLE "Persona" (
     "nombre" TEXT NOT NULL,
     "apellidoPaterno" TEXT NOT NULL,
     "apellidoMaterno" TEXT NOT NULL,
-    "ci" TEXT NOT NULL,
+    "ci" TEXT,
     "correo" TEXT NOT NULL,
-    "telefono" TEXT NOT NULL,
-    "direccion" TEXT NOT NULL,
-    "fechaNacimiento" TIMESTAMP(3) NOT NULL,
-    "nacionalidad" TEXT NOT NULL,
-    "estadoCivil" TEXT NOT NULL,
-    "sexo" TEXT NOT NULL,
+    "telefono" TEXT,
+    "direccion" TEXT,
+    "fechaNacimiento" TIMESTAMP(3),
+    "nacionalidad" TEXT,
+    "estadoCivil" TEXT,
+    "sexo" TEXT,
     "usuarioId" TEXT NOT NULL,
 
     CONSTRAINT "Persona_pkey" PRIMARY KEY ("id")
@@ -82,7 +88,7 @@ CREATE TABLE "Persona" (
 -- CreateTable
 CREATE TABLE "Estudiante" (
     "id" TEXT NOT NULL,
-    "urlFotoPerfil" TEXT NOT NULL,
+    "urlFotoPerfil" TEXT,
     "profesionId" INTEGER NOT NULL,
     "personaId" TEXT NOT NULL,
 
@@ -101,7 +107,7 @@ CREATE TABLE "Administrador" (
 CREATE TABLE "Empresa" (
     "id" TEXT NOT NULL,
     "nombre" TEXT NOT NULL,
-    "nit" TEXT NOT NULL,
+    "nit" TEXT,
     "direccion" TEXT NOT NULL,
     "telefono" TEXT NOT NULL,
     "correo" TEXT NOT NULL,
@@ -180,13 +186,16 @@ CREATE TABLE "_OfertaLaboralToProfesion" (
 CREATE UNIQUE INDEX "Account_provider_providerAccountId_key" ON "Account"("provider", "providerAccountId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Session_sessionToken_key" ON "Session"("sessionToken");
-
--- CreateIndex
 CREATE UNIQUE INDEX "VerificationToken_token_key" ON "VerificationToken"("token");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "VerificationToken_identifier_token_key" ON "VerificationToken"("identifier", "token");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Session_sessionToken_key" ON "Session"("sessionToken");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Usuario_email_key" ON "Usuario"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Usuario_nombreUsuario_key" ON "Usuario"("nombreUsuario");
@@ -202,6 +211,9 @@ CREATE UNIQUE INDEX "Administrador_personaId_key" ON "Administrador"("personaId"
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Empresa_usuarioId_key" ON "Empresa"("usuarioId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Profesion_nombre_key" ON "Profesion"("nombre");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_OfertaLaboralToProfesion_AB_unique" ON "_OfertaLaboralToProfesion"("A", "B");
