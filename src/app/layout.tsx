@@ -1,5 +1,5 @@
 import "~/styles/globals.css";
-import "primereact/resources/themes/arya-orange/theme.css";
+import "primereact/resources/themes/viva-light/theme.css";
 import "primeicons/primeicons.css";
 
 import { GeistSans } from "geist/font/sans";

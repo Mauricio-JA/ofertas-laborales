@@ -6,8 +6,13 @@ import { IconField } from "primereact/iconfield";
 import { InputText } from "primereact/inputtext";
 import { InputIcon } from "primereact/inputicon";
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import { type SubmitHandler, useForm } from "react-hook-form";
+import { useRouter, useSearchParams } from "next/navigation";
+import {
+  type SubmitHandler,
+  useForm,
+  type SubmitErrorHandler,
+} from "react-hook-form";
+import { signIn } from "next-auth/react";
 
 type Inputs = {
   username: string;
@@ -21,11 +26,25 @@ const LoginForm = () =>
   {
     const router = useRouter();
     const [showPassword, setShowPassword] = useState<boolean>(false);
+    const searchParams = useSearchParams();
+    const error = searchParams.get("error");
 
-    const { register, handleSubmit } = useForm<Inputs>();
+    const {
+      register,
+      handleSubmit,
+      formState: { errors },
+    } = useForm<Inputs>();
 
-    const onSubmit: SubmitHandler<Inputs> = (data: Inputs) => {
+    const onSubmit: SubmitHandler<Inputs> = async (data: Inputs) => {
       console.log(data);
+      await signIn("credentials", {
+        username: data.username,
+        password: data.password,
+      });
+    };
+
+    const onError: SubmitErrorHandler<Inputs> = (errors) => {
+      console.log(errors);
     };
 
     return (
@@ -42,18 +61,17 @@ const LoginForm = () =>
             <div className="text-900 mb-3 text-3xl font-medium">
               Bienvenido a <span className="text-slate-700">PortalLaboral</span>
             </div>
-            {/* <span className="text-600 line-height-3 font-medium">
-              ¿No tienes una cuenta?
-            </span>
-            <a className="ml-2 cursor-pointer font-medium text-blue-500 no-underline">
-              ¡Regístrate ahora!
-            </a> */}
+            <div className="mb-2 text-center">
+              <div className="text-900 mb-3 text-lg font-medium text-red-600">
+                {error}
+              </div>
+            </div>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit(onSubmit, onError)}>
             <label
               htmlFor="username"
-              className="text-900 mb-2 block font-medium"
+              className="text-900 mb-2 mt-4 block font-medium"
             >
               Nombre de usuario
             </label>
@@ -61,23 +79,25 @@ const LoginForm = () =>
               id="username"
               type="text"
               placeholder="Nombre de usuario"
-              className="mb-3 w-full"
-              {...register("username")}
+              className="w-full"
+              {...register("username", { required: true })}
             />
-
+            {errors.username && (
+              <span className="text-red-600">Este campo es requerido</span>
+            )}
             <label
               htmlFor="password"
-              className="text-900 mb-2 block font-medium"
+              className="text-900 mb-2 mt-4 block font-medium"
             >
               Contraseña
             </label>
-            <IconField className="mb-3">
+            <IconField className="">
               <InputText
                 id="password"
                 type={showPassword ? "text" : "password"}
                 placeholder="Contraseña"
                 className="w-full"
-                {...register("password")}
+                {...register("password", { required: true })}
               />
               <InputIcon
                 className={`cursor-pointer text-xl ${
@@ -86,6 +106,9 @@ const LoginForm = () =>
                 onClick={() => setShowPassword(!showPassword)}
               />
             </IconField>
+            {errors.password && (
+              <span className="text-red-600">Este campo es requerido</span>
+            )}
             <Button
               label="Iniciar Sesión"
               className=" mb-3 mt-6 w-full"

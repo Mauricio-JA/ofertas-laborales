@@ -222,7 +222,7 @@ const RegistrarEmpresaForm = () => {
                 router.push("/");
               }}
             />
-            <Button label="Regístrate" type="submit" className="mt-6 w-4/5" />
+            <Button label="Registrar" type="submit" className="mt-6 w-4/5" />
           </div>
         </form>
       </div>

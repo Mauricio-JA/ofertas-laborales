@@ -5,10 +5,11 @@ import {
   type NextAuthOptions,
 } from "next-auth";
 import { type Adapter } from "next-auth/adapters";
-// import DiscordProvider from "next-auth/providers/discord";
+import CredentialsProvider from "next-auth/providers/credentials";
 
 // import { env } from "~/env";
 import { db } from "~/server/db";
+import type { UsuarioLogin } from "~/types/login";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -38,30 +39,64 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
+    session: ({ session, user }) => {
+      console.log("SESSION CALLBACK", session, user);
+      return {
+        ...session,
+        // user: {
+        //   ...session.user,
+        //   id: user.id,
+        // },
+      };
+    },
   },
   adapter: PrismaAdapter(db) as Adapter,
   providers: [
-    // DiscordProvider({
-    //   clientId: env.DISCORD_CLIENT_ID,
-    //   clientSecret: env.DISCORD_CLIENT_SECRET,
-    // }),
-    /**
-     * ...add more providers here.
-     *
-     * Most other providers require a bit more work than the Discord provider. For example, the
-     * GitHub provider requires you to add the `refresh_token_expires_in` field to the Account
-     * model. Refer to the NextAuth.js docs for the provider you want to use. Example:
-     *
-     * @see https://next-auth.js.org/providers/github
-     */
+    CredentialsProvider({
+      name: "Credenciales",
+      credentials: {
+        username: { label: "Usuario", type: "text" },
+        password: { label: "Contraseña", type: "password" },
+      },
+      async authorize(credentials) {
+        const res = await fetch("http://localhost:3000/api/login", {
+          method: "POST",
+          body: JSON.stringify(credentials),
+          headers: { "Content-Type": "application/json" },
+        });
+
+        const response: {
+          ok: boolean;
+          data: UsuarioLogin | null;
+          message?: string;
+        } = (await res.json()) as {
+          ok: boolean;
+          data: UsuarioLogin | null;
+          message?: string;
+        };
+
+        if (response.ok && response.data) {
+          return {
+            id: response.data.id,
+            name: response.data.nombreUsuario,
+            email: response.data.email,
+            image: response.data.image,
+            tipoUsuario: response.data.tipoUsuarioId,
+          };
+        } else {
+          throw new Error(response.message);
+        }
+      },
+    }),
   ],
+  pages: {
+    error: "/",
+  },
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+    updateAge: 24 * 60 * 60, // 24 hours
+  },
 };
 
 /**
