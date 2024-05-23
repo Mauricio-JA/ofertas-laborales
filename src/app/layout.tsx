@@ -1,5 +1,5 @@
 import "~/styles/globals.css";
-import "primereact/resources/themes/fluent-light/theme.css";
+import "primereact/resources/themes/viva-light/theme.css";
 import "primeicons/primeicons.css";
 
 import { GeistSans } from "geist/font/sans";
@@ -21,7 +21,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${GeistSans.variable}`}>
+    <html lang="es" className={`${GeistSans.variable} `}>
       <body>
         <TRPCReactProvider>
           <PrimeReactProvider>
