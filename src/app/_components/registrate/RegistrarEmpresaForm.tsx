@@ -57,7 +57,7 @@ const RegistrarEmpresaForm = () => {
   });
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
-    console.log(data);
+    // console.log(data);
   };
 
   const onError: SubmitErrorHandler<Inputs> = (errors) => {

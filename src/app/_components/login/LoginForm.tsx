@@ -36,7 +36,6 @@ const LoginForm = () =>
     } = useForm<Inputs>();
 
     const onSubmit: SubmitHandler<Inputs> = async (data: Inputs) => {
-      console.log(data);
       await signIn("credentials", {
         username: data.username,
         password: data.password,

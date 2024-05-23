@@ -30,7 +30,7 @@ export async function POST(req: Request) {
 
   if (!usuario) {
     return Response.json(
-      { ok: false, message: "Nombre de Usuario no encontrado" },
+      { ok: false, message: "Credenciales incorrectas" },
       { status: 400, statusText: "Bad Request" },
     );
   }
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
 
   if (!isValid) {
     return Response.json(
-      { ok: false, message: "Contrasena incorrecta" },
+      { ok: false, message: "Credenciales incorrectas" },
       { status: 400, statusText: "Bad Request" },
     );
   }

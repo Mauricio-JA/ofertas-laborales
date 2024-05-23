@@ -1,4 +1,3 @@
-import { PrismaAdapter } from "@auth/prisma-adapter";
 import {
   getServerSession,
   type DefaultSession,
@@ -6,6 +5,7 @@ import {
 } from "next-auth";
 import { type Adapter } from "next-auth/adapters";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { PrismaAdapter } from "@auth/prisma-adapter";
 
 // import { env } from "~/env";
 import { db } from "~/server/db";
@@ -21,6 +21,7 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
+      tipoUsuario?: number;
       // ...other properties
       // role: UserRole;
     } & DefaultSession["user"];
@@ -39,15 +40,27 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session: ({ session, user }) => {
-      console.log("SESSION CALLBACK", session, user);
+    session: async ({ session, token }) => {
       return {
         ...session,
-        // user: {
-        //   ...session.user,
-        //   id: user.id,
-        // },
+        user: {
+          ...session.user,
+          name: token.name,
+          id: token.id,
+          tipoUsuario: token.tipoUsuario,
+        },
       };
+    },
+    jwt: async ({ token, user }) => {
+      if (user) {
+        return {
+          ...token,
+          name: (user as UsuarioLogin).nombreUsuario,
+          id: user.id,
+          tipoUsuario: (user as UsuarioLogin)?.tipoUsuarioId,
+        };
+      }
+      return token;
     },
   },
   adapter: PrismaAdapter(db) as Adapter,
@@ -76,13 +89,7 @@ export const authOptions: NextAuthOptions = {
         };
 
         if (response.ok && response.data) {
-          return {
-            id: response.data.id,
-            name: response.data.nombreUsuario,
-            email: response.data.email,
-            image: response.data.image,
-            tipoUsuario: response.data.tipoUsuarioId,
-          };
+          return response.data;
         } else {
           throw new Error(response.message);
         }

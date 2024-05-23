@@ -1,31 +1,23 @@
-import Link from "next/link";
-
 import LoginForm from "./_components/login/LoginForm";
+import { getServerAuthSession } from "~/server/auth";
+import HomeAdmin from "./_components/inicio/HomeAdmin";
+import HomeEmpresa from "./_components/inicio/HomeEmpresa";
+import HomeEstudiante from "./_components/inicio/HomeEstudiante";
 
 // import { CreatePost } from "~/app/_components/create-post";
-import { getServerAuthSession } from "~/server/auth";
 //import { api } from "~/trpc/server";
 
 export default async function Home() {
   //const hello = await api.post.hello({ text: "from tRPC" });
+
   const session = await getServerAuthSession();
 
-  return (
-    <div>
-      <LoginForm />
-      <div className="flex flex-col items-center justify-center gap-4">
-        <p className="text-center text-2xl text-white">
-          {session && <span>Logged in as {session.user?.name}</span>}
-        </p>
-        <Link
-          href={session ? "/api/auth/signout" : "/api/auth/signin"}
-          className="rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
-        >
-          {session ? "Sign out" : "Sign in"}
-        </Link>
-      </div>
-    </div>
-  );
+  console.log(session);
+  if (session?.user?.tipoUsuario === 1) return <HomeAdmin />;
+  if (session?.user?.tipoUsuario === 2) return <HomeEmpresa />;
+  if (session?.user?.tipoUsuario === 3) return <HomeEstudiante />;
+
+  return <LoginForm />;
 }
 
 // async function CrudShowcase() {
